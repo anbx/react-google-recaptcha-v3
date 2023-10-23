@@ -15,6 +15,12 @@ interface IInjectGoogleReCaptchaScriptParams {
   };
 }
 
+declare global {
+  interface Window {
+    onLoad:any;
+  }
+}
+
 /**
  * Function to generate the src for the script tag
  *
@@ -163,11 +169,12 @@ export const injectGoogleReCaptchaScript = ({
   });
   const js = document.createElement('script');
   js.id = scriptId;
+  window.onLoad = onLoad;
   js.src = `${googleRecaptchaSrc}?render=${render}${
     render === 'explicit' ? `&onload=${onLoadCallbackName}` : ''
   }${
     language ? `&hl=${language}` : ''
-  }`;
+  }&onload=onLoad`;
 
   if (!!nonce) {
     js.nonce = nonce;
@@ -175,7 +182,7 @@ export const injectGoogleReCaptchaScript = ({
 
   js.defer = !!defer;
   js.async = !!async;
-  js.onload = onLoad;
+  // js.onload = onLoad;
 
   /**
    * Append it to the body // head
